@@ -137,7 +137,6 @@ export default {
       this.btnloader = true;
       let email = this.email;
       let password = this.password;
-      if(password == null)
       axios.post(deployServer + 'api/users/login', {
         params: {
           email: email,
