@@ -1,9 +1,9 @@
 <template>
   <q-page>
     <div class="q-pa-md" style="margin-left: auto;
-  margin-right: auto; margin-top: 50px; max-width: 700px;">
-    <q-card style="height:500px">
-      <div style="margin-left: auto; margin-right: auto; padding-top: 35px; max-width: 400px">
+  margin-right: auto; margin-top: 3.3em; max-width: 50em;">
+    <q-card style="height:44em">
+      <div style="margin-left: auto; margin-right: auto; padding-top: 2.5em; max-width: 28.57em">
 
     <q-form
       @submit="register_user"
@@ -56,7 +56,10 @@
       </div>
 
       <div class="flex flex-center">
-        <q-btn label="Register" type="submit" color="primary"/>
+        <btnLoader v-if=btnloader></btnLoader>
+        <div v-else>
+          <q-btn label="Register" type="submit" color="primary"/>
+        </div>
       </div>
     </q-form>
   </div>
@@ -67,12 +70,14 @@
 </template>
 
 <script>
+import btnLoader from '../layouts/btnLoader'
 import {deployServer, testServer} from '../serverPath.js'
 import axios from 'axios';
 
 export default {
   data () {
     return {
+      btnloader: false,
       name: null,
       email: null,
       password: null,
@@ -80,8 +85,12 @@ export default {
       errors: {}
     }
   },
+  components: {
+    btnLoader
+  },
   methods: {
     register_user: function() {
+      this.btnloader = true;
       let name = this.name;
       let email = this.email;
       let password = this.password;
@@ -97,6 +106,7 @@ export default {
         .then((response) => {
           if(response.data.success == true)
           {
+            this.btnloader = false;
             localStorage.setItem('user_auth_Token', response.data.token)
             this.$router.push({
               path: '/restricted'
@@ -104,6 +114,7 @@ export default {
           }
         })
         .catch((error) => {
+          this.btnloader = false;
           this.errors = error.response.data
         });
     }

@@ -2,7 +2,7 @@
   <q-page>
     <div class="q-pa-md">
     <div class="q-gutter-y-md" style="margin-left: auto;
-  margin-right: auto; margin-top: 50px; max-width: 600px">
+  margin-right: auto; margin-top: 3.3em; max-width: 42.85em">
     <q-card>
       <q-tabs
         v-model="tab"
@@ -23,7 +23,7 @@
 
         <q-tab-panel name="email">
           <div class="q-pa-md" style="margin-left: auto;
-            margin-right: auto; margin-top: 30px; max-width: 400px">
+            margin-right: auto; margin-top: 2em; max-width: 28.57em">
 
           <q-form @submit="login_user" class="q-gutter-md">
             <q-input
@@ -50,7 +50,10 @@
             </div>
 
             <div class="flex flex-center">
-              <q-btn label="Login" type="submit" color="primary"/>
+              <btnLoader v-if=btnloader></btnLoader>
+              <div v-else>
+                <q-btn label="Login" type="submit" color="primary"/>
+              </div>
             </div>
           </q-form>
 
@@ -59,9 +62,9 @@
 
         <q-tab-panel name="mobile">
           <div class="q-pa-md" style="margin-left: auto;
-            margin-right: auto; margin-top: 30px; max-width: 400px">
+            margin-right: auto; margin-top: 2em; max-width: 28.57em">
 
-          <q-form @submit="get_otp" class="q-gutter-md">
+          <q-form v-if="otp_panel == false" @submit="get_otp" class="q-gutter-md">
             <q-input
               filled
               type="tel"
@@ -72,7 +75,10 @@
               <a show>*{{errors.mobile}}</a>
             </div>
             <div class="flex flex-center">
-              <q-btn label="Get OTP" type="submit" color="primary"/>
+              <btnLoader v-if=btnloader></btnLoader>
+              <div v-else>
+                <q-btn label="Get OTP" type="submit" color="primary"/>
+              </div>
             </div>
           </q-form>
 
@@ -87,7 +93,10 @@
               <a show>*{{errors.otp}}</a>
             </div>
             <div class="flex flex-center">
-              <q-btn label="Verify OTP" type="submit" color="primary"/>
+              <btnLoader v-if=btnloader></btnLoader>
+              <div v-else>
+                <q-btn label="Verify OTP" type="submit" color="primary"/>
+              </div>
             </div>
           </q-form>
 
@@ -101,12 +110,14 @@
 </template>
 
 <script>
+import btnLoader from '../layouts/btnLoader'
 import { deployServer, testServer } from '../serverPath.js'
 import axios from 'axios';
 
 export default {
   data () {
     return {
+      btnloader: false,
       email: null,
       password: null,
       mobile: null,
@@ -117,8 +128,12 @@ export default {
       errors: {}
     }
   },
+  components:{
+    btnLoader
+  },
   methods: {
     login_user: function() {
+      this.btnloader = true;
       let email = this.email;
       let password = this.password;
       axios.post(deployServer + 'api/users/login', {
@@ -130,6 +145,7 @@ export default {
         .then((response) => {
           if(response.data.success == true)
           {
+            this.btnloader = false;
             localStorage.setItem('user_auth_Token', response.data.token)
             this.$router.push({
               path: '/restricted'
@@ -137,10 +153,12 @@ export default {
           }
         })
         .catch((error) => {
+          this.btnloader = false;
           this.errors = error.response.data
         });
     },
     get_otp: function() {
+      this.btnloader = true;
       let mobile = this.mobile;
       axios.post(deployServer + 'api/phone/sms_verification', {
         params: {
@@ -148,6 +166,7 @@ export default {
         }
       })
         .then((response) => {
+          this.btnloader = false;
           if(response.data.success == true)
           {
             this.otp_panel = true
@@ -156,10 +175,12 @@ export default {
           }
         })
         .catch((error) => {
+          this.btnloader = false;
           this.errors = error.response.data
         });
     },
     verify_otp: function() {
+      this.btnloader = true;
       let otp_code = this.otp_code
       axios.post(deployServer + 'api/phone/verify_otp', {
         params: {
@@ -168,15 +189,18 @@ export default {
         }
       })
         .then((response) => {
+          this.btnloader = false;
           if(response.data.success == true)
           {
             localStorage.setItem('user_auth_Token', response.data.token)
+            this.otp_panel = false
             this.$router.push({
               path: '/restricted'
             })
           }
         })
         .catch((error) => {
+          this.btnloader = false;
           this.errors = error.response.data
         });
     }
