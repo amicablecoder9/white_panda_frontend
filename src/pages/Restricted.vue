@@ -20,7 +20,7 @@ export default {
     let auth = localStorage.getItem('user_auth_Token')
     if(auth == null){
       this.$router.push({
-        path: '/login'
+        path: '/'
       })
     }
   },
@@ -28,7 +28,7 @@ export default {
     logout: function() {
       localStorage.removeItem('user_auth_Token')
       this.$router.push({
-        path: '/login'
+        path: '/'
       })
     }
   }

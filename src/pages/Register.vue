@@ -52,7 +52,7 @@
       </div>
 
       <div style="display: flex; justify-content: flex-end">
-        Alraedy have an account? <router-link to="/login">Login</router-link>
+        Alraedy have an account? <router-link to="/">Login</router-link>
       </div>
 
       <div class="flex flex-center">
@@ -67,6 +67,7 @@
 </template>
 
 <script>
+import {deployServer, testServer} from '../serverPath.js'
 import axios from 'axios';
 
 export default {
@@ -85,7 +86,7 @@ export default {
       let email = this.email;
       let password = this.password;
       let password2  = this.password2;
-      axios.post('http://localhost:5000/api/users/register', {
+      axios.post(deployServer + 'api/users/register', {
         params: {
           name: name,
           email: email,

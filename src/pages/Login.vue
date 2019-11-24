@@ -101,6 +101,7 @@
 </template>
 
 <script>
+import { deployServer, testServer } from '../serverPath.js'
 import axios from 'axios';
 
 export default {
@@ -120,7 +121,7 @@ export default {
     login_user: function() {
       let email = this.email;
       let password = this.password;
-      axios.post('http://localhost:5000/api/users/login', {
+      axios.post(deployServer + 'api/users/login', {
         params: {
           email: email,
           password: password
@@ -141,7 +142,7 @@ export default {
     },
     get_otp: function() {
       let mobile = this.mobile;
-      axios.post('http://localhost:5000/api/phone/sms_verification', {
+      axios.post(deployServer + 'api/phone/sms_verification', {
         params: {
           mobile: mobile
         }
@@ -160,7 +161,7 @@ export default {
     },
     verify_otp: function() {
       let otp_code = this.otp_code
-      axios.post('http://localhost:5000/api/phone/verify_otp', {
+      axios.post(deployServer + 'api/phone/verify_otp', {
         params: {
           otp_code: otp_code,
           to: this.to
