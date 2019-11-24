@@ -137,26 +137,56 @@ export default {
       this.btnloader = true;
       let email = this.email;
       let password = this.password;
-      axios.post(deployServer + 'api/users/login', {
-        params: {
-          email: email,
-          password: password
-        }
-      })
-        .then((response) => {
-          if(response.data.success == true)
-          {
-            this.btnloader = false;
-            localStorage.setItem('user_auth_Token', response.data.token)
-            this.$router.push({
-              path: '/restricted'
-            })
+      if(password == null)
+      {
+        this.errors.password = 'Password field is required';
+        this.btnloader = false;
+      }
+      else {
+        axios.post(deployServer + 'api/users/login', {
+          params: {
+            email: email
           }
         })
-        .catch((error) => {
-          this.btnloader = false;
-          this.errors = error.response.data
-        });
+          .then((response) => {
+            if(response.data.id != null)
+            {
+              // Check password
+              bcrypt.compare(password, response.data.password).then(isMatch => {
+                if (isMatch) {
+                  // User matched
+                  // Create JWT Payload
+                  const payload = {
+                    id: user.id,
+                    name: user.name
+                  };
+
+                  // Sign token
+                  jwt.sign(payload, keys.secretOrKey,
+                    {
+                      expiresIn: 31556926 // 1 year in seconds
+                    },
+                    (err, token) => {
+                      token = 'Bearer ' + token;
+                    }
+                  );
+                } else {
+                  this.btnloader = false;
+                  this.errors.password = 'Password incorrect';
+                }
+              });
+              this.btnloader = false;
+              localStorage.setItem('user_auth_Token', response.data.token)
+              this.$router.push({
+                path: '/restricted'
+              })
+            }
+          })
+          .catch((error) => {
+            this.btnloader = false;
+            this.errors = error.response.data
+          });
+      }
     },
     get_otp: function() {
       this.btnloader = true;
