@@ -113,6 +113,7 @@
 import btnLoader from '../layouts/btnLoader'
 import { deployServer, testServer } from '../serverPath.js'
 import axios from 'axios';
+import bcrypt from 'bcryptjs'
 
 export default {
   data () {
@@ -136,6 +137,7 @@ export default {
       this.btnloader = true;
       let email = this.email;
       let password = this.password;
+      if(password == null)
       axios.post(deployServer + 'api/users/login', {
         params: {
           email: email,

@@ -52,7 +52,7 @@
       </div>
 
       <div style="display: flex; justify-content: flex-end">
-        Alraedy have an account? <router-link to="/">Login</router-link>
+        Already have an account? <router-link to="/">Login</router-link>
       </div>
 
       <div class="flex flex-center">
@@ -73,6 +73,7 @@
 import btnLoader from '../layouts/btnLoader'
 import {deployServer, testServer} from '../serverPath.js'
 import axios from 'axios';
+import bcrypt from 'bcryptjs';
 
 export default {
   data () {
@@ -95,28 +96,44 @@ export default {
       let email = this.email;
       let password = this.password;
       let password2  = this.password2;
-      axios.post(deployServer + 'api/users/register', {
-        params: {
-          name: name,
-          email: email,
-          password: password,
-          password2: password2
+      if (password != password2 || password.length != 6)
+      {
+        this.errors.password2 = 'Passwords must match';
+        if (password.length != 6)
+        {
+          this.errors.password = 'Password must be at least 6 characters';
         }
-      })
-        .then((response) => {
-          if(response.data.success == true)
-          {
-            this.btnloader = false;
-            localStorage.setItem('user_auth_Token', response.data.token)
-            this.$router.push({
-              path: '/restricted'
-            })
+        this.btnloader = false;
+      }
+      else {
+        bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(password, salt, (err, hash) => {
+          if (err) throw err;
+          password = hash;
+          });
+        });
+        axios.post(deployServer + 'api/users/register', {
+          params: {
+            name: name,
+            email: email,
+            password: password
           }
         })
-        .catch((error) => {
-          this.btnloader = false;
-          this.errors = error.response.data
-        });
+          .then((response) => {
+            if(response.data.success == true)
+            {
+              this.btnloader = false;
+              localStorage.setItem('user_auth_Token', response.data.token)
+              this.$router.push({
+                path: '/restricted'
+              })
+            }
+          })
+          .catch((error) => {
+            this.btnloader = false;
+            this.errors = error.response.data
+          });
+      }
     }
   },
 }
