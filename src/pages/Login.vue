@@ -127,6 +127,7 @@ export default {
       tab: 'email',
       otp_panel: false,
       to: null,
+      tokenId: null,
       errors: {}
     }
   },
@@ -168,7 +169,7 @@ export default {
                       expiresIn: 31556926 // 1 year in seconds
                     },
                     (err, token) => {
-                      token = 'Bearer ' + token;
+                      this.tokenId = 'Bearer ' + token;
                     }
                   );
                 } else {
@@ -177,7 +178,7 @@ export default {
                 }
               });
               this.btnloader = false;
-              localStorage.setItem('user_auth_Token', token)
+              localStorage.setItem('user_auth_Token', this.tokenId)
               this.$router.push({
                 path: '/restricted'
               })
