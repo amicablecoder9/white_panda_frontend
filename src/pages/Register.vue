@@ -72,8 +72,7 @@
 <script>
 import btnLoader from '../layouts/btnLoader'
 import {deployServer, testServer} from '../serverPath.js'
-import axios from 'axios';
-import bcrypt from 'bcryptjs';
+import axios from 'axios'
 
 export default {
   data () {
@@ -106,12 +105,6 @@ export default {
         this.btnloader = false;
       }
       else {
-        bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(password, salt, (err, hash) => {
-          if (err) throw err;
-          password = hash;
-          });
-        });
         axios.post(deployServer + 'api/users/register', {
           params: {
             name: name,
