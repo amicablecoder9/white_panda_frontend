@@ -112,8 +112,9 @@
 <script>
 import btnLoader from '../layouts/btnLoader'
 import { deployServer, testServer } from '../serverPath.js'
-import axios from 'axios';
+import axios from 'axios'
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 
 export default {
   data () {
@@ -176,7 +177,7 @@ export default {
                 }
               });
               this.btnloader = false;
-              localStorage.setItem('user_auth_Token', response.data.token)
+              localStorage.setItem('user_auth_Token', token)
               this.$router.push({
                 path: '/restricted'
               })
